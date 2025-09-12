@@ -14,344 +14,275 @@
 # limitations under the License.
 
 import streamlit as st
-import yfinance as yf
 import pandas as pd
 import altair as alt
+import os
 
 st.set_page_config(
-    page_title="Stock peer analysis dashboard",
-    page_icon=":chart_with_upwards_trend:",
+    page_title="Dashboard Monitor de Marca YPF Luz",
+    page_icon="img/logo.png",
     layout="wide",
 )
 
 """
-# :material/query_stats: Stock peer analysis
+# Dashboard Monitor de Marca YPF Luz
 
-Easily compare stocks against others in their peer group.
+Navega los indicadores más importantes del estudio de mercado.
 """
 
+# Display the custom logo image
+st.image("img/logo.png", width=100)  # Adjust width as needed
+
+"" 
 ""  # Add some space.
 
 cols = st.columns([1, 3])
-# Will declare right cell later to avoid showing it when no data.
 
-STOCKS = [
-    "AAPL",
-    "ABBV",
-    "ACN",
-    "ADBE",
-    "ADP",
-    "AMD",
-    "AMGN",
-    "AMT",
-    "AMZN",
-    "APD",
-    "AVGO",
-    "AXP",
-    "BA",
-    "BK",
-    "BKNG",
-    "BMY",
-    "BRK.B",
-    "BSX",
-    "C",
-    "CAT",
-    "CI",
-    "CL",
-    "CMCSA",
-    "COST",
-    "CRM",
-    "CSCO",
-    "CVX",
-    "DE",
-    "DHR",
-    "DIS",
-    "DUK",
-    "ELV",
-    "EOG",
-    "EQR",
-    "FDX",
-    "GD",
-    "GE",
-    "GILD",
-    "GOOG",
-    "GOOGL",
-    "HD",
-    "HON",
-    "HUM",
-    "IBM",
-    "ICE",
-    "INTC",
-    "ISRG",
-    "JNJ",
-    "JPM",
-    "KO",
-    "LIN",
-    "LLY",
-    "LMT",
-    "LOW",
-    "MA",
-    "MCD",
-    "MDLZ",
-    "META",
-    "MMC",
-    "MO",
-    "MRK",
-    "MSFT",
-    "NEE",
-    "NFLX",
-    "NKE",
-    "NOW",
-    "NVDA",
-    "ORCL",
-    "PEP",
-    "PFE",
-    "PG",
-    "PLD",
-    "PM",
-    "PSA",
-    "REGN",
-    "RTX",
-    "SBUX",
-    "SCHW",
-    "SLB",
-    "SO",
-    "SPGI",
-    "T",
-    "TJX",
-    "TMO",
-    "TSLA",
-    "TXN",
-    "UNH",
-    "UNP",
-    "UPS",
-    "V",
-    "VZ",
-    "WFC",
-    "WM",
-    "WMT",
-    "XOM",
+# Available charts - you can add more as you create CSV files
+AVAILABLE_CHARTS = [
+    "importancia_energia",
+    "importancia_renovables",
+    "conocimiento_espontaneo",
+    "conocimiento_guiado",
+    # Add more chart files here as you create them
 ]
 
-DEFAULT_STOCKS = ["AAPL", "MSFT", "GOOGL", "NVDA", "AMZN", "TSLA", "META"]
+# Chart display names for better UI
+CHART_DISPLAY_NAMES = {
+    "importancia_energia": "Importancia Energía",
+    "importancia_renovables": "Importancia Energías Renovables",
+    "conocimiento_espontaneo": "Conocimiento de la marca TOP OF MIND",
+    "conocimiento_guiado": "Conocimiento total de marcas guiado"
+    # Add display names for your charts
+}
 
-
-def stocks_to_str(stocks):
-    return ",".join(stocks)
-
-
-if "tickers_input" not in st.session_state:
-    st.session_state.tickers_input = st.query_params.get(
-        "stocks", stocks_to_str(DEFAULT_STOCKS)
-    ).split(",")
-
-
-# Callback to update query param when input changes
-def update_query_param():
-    if st.session_state.tickers_input:
-        st.query_params["stocks"] = stocks_to_str(st.session_state.tickers_input)
-    else:
-        st.query_params.pop("stocks", None)
+CHART_TYPES = {
+       "importancia_energia": "pie",        # categorical data -> pie chart
+       "importancia_renovables": "stacked_bar",     # multiple categories -> stacked bar
+       "conocimiento_espontaneo": "grouped_bar",
+       "conocimiento_guiado": "grouped_bar",
+}
 
 
 top_left_cell = cols[0].container(
     border=True, height="stretch", vertical_alignment="center"
 )
 
-with top_left_cell:
-    # Selectbox for stock tickers
-    tickers = st.multiselect(
-        "Stock tickers",
-        options=sorted(set(STOCKS) | set(st.session_state.tickers_input)),
-        default=st.session_state.tickers_input,
-        placeholder="Choose stocks to compare. Example: NVDA",
-        accept_new_options=True,
-    )
+selected_charts = AVAILABLE_CHARTS
 
-# Time horizon selector
-horizon_map = {
-    "1 Months": "1mo",
-    "3 Months": "3mo",
-    "6 Months": "6mo",
-    "1 Year": "1y",
-    "5 Years": "5y",
-    "10 Years": "10y",
-    "20 Years": "20y",
-}
+# Wave comparison selector
+WAVES = ["Ola 1", "Ola 2"]
 
 with top_left_cell:
-    # Buttons for picking time horizon
-    horizon = st.pills(
-        "Time horizon",
-        options=list(horizon_map.keys()),
-        default="6 Months",
+    # Buttons for picking waves to compare
+    selected_waves = st.multiselect(
+        "Ondas a comparar",
+        options=WAVES,
+        default=WAVES,
     )
 
-tickers = [t.upper() for t in tickers]
-
-# Update query param when text input changes
-if tickers:
-    st.query_params["stocks"] = stocks_to_str(tickers)
-else:
-    # Clear the param if input is empty
-    st.query_params.pop("stocks", None)
-
-if not tickers:
-    top_left_cell.info("Pick some stocks to compare", icon=":material/info:")
+if not selected_waves:
+    top_left_cell.warning("Selecciona al menos una ola para comparar", icon=":material/warning:")
     st.stop()
-
 
 right_cell = cols[1].container(
     border=True, height="stretch", vertical_alignment="center"
 )
 
-
 @st.cache_resource(show_spinner=False)
-def load_data(tickers, period):
-    tickers_obj = yf.Tickers(tickers)
-    data = tickers_obj.history(period=period)
-    if data is None:
-        raise RuntimeError("YFinance returned no data.")
-    return data["Close"]
+def load_data(chart_name):
+    """Load specific chart data from CSV"""
+    csv_path = f"data/{chart_name}.csv"
+    try:
+        data = pd.read_csv(csv_path)
+        if data.empty:
+            raise RuntimeError(f"CSV file {chart_name} is empty.")
+        return data
+    except FileNotFoundError:
+        raise RuntimeError(f"Chart file not found: {chart_name}")
+    except Exception as e:
+        raise RuntimeError(f"Error loading {chart_name}: {str(e)}")
 
+def process_survey_data(data, selected_waves):
+    """Process survey data for visualization"""
+    # Ensure we only include selected waves
+    available_waves = [col for col in data.columns if col in selected_waves and col != data.columns[0]]
+    
+    if not available_waves:
+        return None
+    
+    # Create processed data with category and wave values
+    processed_data = []
+    category_col = data.columns[0]  # First column is category
+    
+    for _, row in data.iterrows():
+        category = row[category_col]
+        if pd.isna(category) or category == "":
+            continue
+            
+        for wave in available_waves:
+            if wave in data.columns and not pd.isna(row[wave]):
+                value = row[wave]
+                # Clean percentage values
+                if isinstance(value, str) and '%' in value:
+                    try:
+                        value = float(value.replace('%', ''))
+                    except ValueError:
+                        continue
+                elif isinstance(value, (int, float)):
+                    value = float(value)
+                else:
+                    continue
+                    
+                processed_data.append({
+                    'Category': category,
+                    'Wave': wave,
+                    'Value': value
+                })
+    
+    return pd.DataFrame(processed_data) if processed_data else None
 
-# Load the data
-try:
-    data = load_data(tickers, horizon_map[horizon])
-except yf.exceptions.YFRateLimitError as e:
-    st.warning("YFinance is rate-limiting us :(\nTry again later.")
-    load_data.clear()  # Remove the bad cache entry.
-    st.stop()
+# ADD THIS FUNCTION RIGHT HERE:
+def create_chart(chart_name, data, chart_type):
+    """Create appropriate chart based on chart type"""
+    chart_title = CHART_DISPLAY_NAMES.get(chart_name, chart_name)
+    
+    if chart_type == "pie":
+        # Pie chart - use only latest wave (Ola 2) for single pie
+        latest_wave = "Ola 2" if "Ola 2" in data['Wave'].values else data['Wave'].iloc[0]
+        pie_data = data[data['Wave'] == latest_wave].copy()
+        
+        chart = alt.Chart(pie_data).mark_arc(
+            outerRadius=120,
+            innerRadius=50,
+            stroke="#fff"
+        ).encode(
+            theta=alt.Theta("Value:Q"),
+            color=alt.Color("Category:N", 
+                          scale=alt.Scale(scheme='category10'),
+                          legend=alt.Legend(orient="right")),
+            tooltip=['Category:N', 'Value:Q']
+        ).properties(
+            title=f"{chart_title} ({latest_wave})",
+            height=400
+        )
+        
+    elif chart_type == "stacked_bar":
+        # Stacked bar chart
+        chart = alt.Chart(data).mark_bar().encode(
+            x=alt.X('Wave:N', title='Ola'),
+            y=alt.Y('Value:Q', title='Porcentaje (%)'),
+            color=alt.Color('Category:N', 
+                          scale=alt.Scale(scheme='category10'),
+                          legend=alt.Legend(orient="right")),
+            tooltip=['Category:N', 'Wave:N', 'Value:Q']
+        ).properties(
+            title=chart_title,
+            height=400
+        )
+    elif chart_type == "grouped_bar":
+        # Grouped/clustered bar chart - shows separate bars for each wave within each category
+        chart = alt.Chart(data).mark_bar(
+            opacity=0.8
+        ).encode(
+            x=alt.X('Category:N', title='Categoría'),
+            y=alt.Y('Value:Q', title='Porcentaje (%)'),
+            color=alt.Color('Wave:N', title='Ola', scale=alt.Scale(scheme='category10')),
+            xOffset=alt.XOffset('Wave:N'),  # This creates the grouping effect
+            tooltip=['Category:N', 'Wave:N', 'Value:Q']
+        ).properties(
+            title=chart_title,
+            height=400
+        ).resolve_scale(
+            x='independent'
+        )
+        
+    else:  # default bar chart
+        chart = alt.Chart(data).mark_bar(
+            opacity=0.8
+        ).encode(
+            x=alt.X('Category:N', title='Categoría'),
+            y=alt.Y('Value:Q', title='Porcentaje (%)'),
+            color=alt.Color('Wave:N', title='Ola', scale=alt.Scale(scheme='category10')),
+            tooltip=['Category:N', 'Wave:N', 'Value:Q']
+        ).properties(
+            title=chart_title,
+            height=400
+        )
+    
+    return chart
 
-empty_columns = data.columns[data.isna().all()].tolist()
+# Load and display the first chart in the main area
+if selected_charts:
+    try:
+        main_chart_data = load_data(selected_charts[0])
+        
+        processed_main_data = process_survey_data(main_chart_data, selected_waves)
+        
+        if processed_main_data is not None and not processed_main_data.empty:
+            with right_cell:
+                chart_type = CHART_TYPES.get(selected_charts[0], "bar")
+                st.write(f"Chart type: {chart_type}")  # Debug line
+                chart = create_chart(selected_charts[0], processed_main_data, chart_type)
+                st.altair_chart(chart, use_container_width=True)
+        else:
+            right_cell.warning(f"No se pudieron procesar los datos para {selected_charts[0]}")
+            
+    except Exception as e:
+        right_cell.error(f"Error loading main chart: {str(e)}")
+        st.exception(e)  # This will show the full error traceback
 
-if empty_columns:
-    st.error(f"Error loading data for the tickers: {', '.join(empty_columns)}.")
-    st.stop()
-
-# Normalize prices (start at 1)
-normalized = data.div(data.iloc[0])
-
-latest_norm_values = {normalized[ticker].iat[-1]: ticker for ticker in tickers}
-max_norm_value = max(latest_norm_values.items())
-min_norm_value = min(latest_norm_values.items())
-
+# Summary metrics
 bottom_left_cell = cols[0].container(
     border=True, height="stretch", vertical_alignment="center"
 )
 
-with bottom_left_cell:
-    cols = st.columns(2)
-    cols[0].metric(
-        "Best stock",
-        max_norm_value[1],
-        delta=f"{round(max_norm_value[0] * 100)}%",
-        width="content",
-    )
-    cols[1].metric(
-        "Worst stock",
-        min_norm_value[1],
-        delta=f"{round(min_norm_value[0] * 100)}%",
-        width="content",
-    )
-
-
-# Plot normalized prices
-with right_cell:
-    st.altair_chart(
-        alt.Chart(
-            normalized.reset_index().melt(
-                id_vars=["Date"], var_name="Stock", value_name="Normalized price"
-            )
-        )
-        .mark_line()
-        .encode(
-            alt.X("Date:T"),
-            alt.Y("Normalized price:Q").scale(zero=False),
-            alt.Color("Stock:N"),
-        )
-        .properties(height=400)
-    )
 
 ""
 ""
 
-# Plot individual stock vs peer average
-"""
-## Individual stocks vs peer average
+# Display individual charts for all selected charts
+if len(selected_charts) > 1:
+    """
+    ## Análisis Individual de Gráficos
+    
+    Comparación detallada entre olas para cada indicador seleccionado.
+    """
 
-For the analysis below, the "peer average" when analyzing stock X always
-excludes X itself.
-"""
+    NUM_COLS = 2
+    chart_cols = st.columns(NUM_COLS)
 
-if len(tickers) <= 1:
-    st.warning("Pick 2 or more tickers to compare them")
-    st.stop()
-
-NUM_COLS = 4
-cols = st.columns(NUM_COLS)
-
-for i, ticker in enumerate(tickers):
-    # Calculate peer average (excluding current stock)
-    peers = normalized.drop(columns=[ticker])
-    peer_avg = peers.mean(axis=1)
-
-    # Create DataFrame with peer average.
-    plot_data = pd.DataFrame(
-        {
-            "Date": normalized.index,
-            ticker: normalized[ticker],
-            "Peer average": peer_avg,
-        }
-    ).melt(id_vars=["Date"], var_name="Series", value_name="Price")
-
-    chart = (
-        alt.Chart(plot_data)
-        .mark_line()
-        .encode(
-            alt.X("Date:T"),
-            alt.Y("Price:Q").scale(zero=False),
-            alt.Color(
-                "Series:N",
-                scale=alt.Scale(domain=[ticker, "Peer average"], range=["red", "gray"]),
-                legend=alt.Legend(orient="bottom"),
-            ),
-            alt.Tooltip(["Date", "Series", "Price"]),
-        )
-        .properties(title=f"{ticker} vs peer average", height=300)
-    )
-
-    cell = cols[(i * 2) % NUM_COLS].container(border=True)
-    cell.write("")
-    cell.altair_chart(chart, use_container_width=True)
-
-    # Create Delta chart
-    plot_data = pd.DataFrame(
-        {
-            "Date": normalized.index,
-            "Delta": normalized[ticker] - peer_avg,
-        }
-    )
-
-    chart = (
-        alt.Chart(plot_data)
-        .mark_area()
-        .encode(
-            alt.X("Date:T"),
-            alt.Y("Delta:Q").scale(zero=False),
-        )
-        .properties(title=f"{ticker} minus peer average", height=300)
-    )
-
-    cell = cols[(i * 2 + 1) % NUM_COLS].container(border=True)
-    cell.write("")
-    cell.altair_chart(chart, use_container_width=True)
+    for i, chart_name in enumerate(selected_charts[1:], 1):  # Skip first chart (already shown above)
+        try:
+            chart_data = load_data(chart_name)
+            processed_data = process_survey_data(chart_data, selected_waves)
+            
+            if processed_data is not None and not processed_data.empty:
+                chart_type = CHART_TYPES.get(chart_name, "bar")
+                chart = create_chart(chart_name, processed_data, chart_type)
+                
+                cell = chart_cols[(i-1) % NUM_COLS].container(border=True)
+                cell.altair_chart(chart, use_container_width=True)
+            else:
+                cell = chart_cols[(i-1) % NUM_COLS].container(border=True)
+                cell.warning(f"No se pudieron procesar los datos para {chart_name}")
+                
+        except Exception as e:
+            cell = chart_cols[(i-1) % NUM_COLS].container(border=True)
+            cell.error(f"Error loading {chart_name}: {str(e)}")
+            cell.exception(e)  # Show full error for debugging
 
 ""
 ""
 
-"""
-## Raw data
-"""
+## Datos en Bruto
 
-data
+# Show raw data for selected charts
+#for chart_name in selected_charts:
+#    try:
+#        chart_data = load_data(chart_name)
+#        chart_title = CHART_DISPLAY_NAMES.get(chart_name, chart_name)
+#        st.subheader(f"Datos: {chart_title}")
+#        st.dataframe(chart_data, use_container_width=True)
+#    except Exception as e:
+#        st.error(f"Error loading data for {chart_name}: {str(e)}")

@@ -1,20 +1,20 @@
-# Stock peer group analysis
+# Demo ypf luz
 
-A Streamlit app where you can compare how different stocks fare against each other.
+Un dashboard de ejemplo para YPF luz
 
-## View it in one click
+## Dónde verlo
 
-[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://stockpeers.streamlit.app)
+[![Click para verlo]()
 
-## Try it on your machine
+## Como verlo localmente
 
-1. Get the code:
+1. Clonar el código:
 
    ```sh
    $ git clone https://github.com/streamlit/demo-stockpeers.git
    ```
 
-2. Start a virtual environment and get the dependencies (requires uv):
+2. Iniciar el entorno virtual y las dependencias (requiere uv):
 
    ```sh
    $ uv venv
@@ -24,7 +24,7 @@ A Streamlit app where you can compare how different stocks fare against each oth
    $ uv sync
    ```
 
-3. Start the app:
+3. Iniciar la app:
 
     ```sh
     $ streamlit run streamlit_app.py

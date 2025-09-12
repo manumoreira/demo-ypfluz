@@ -1,7 +1,7 @@
 [project]
-name = "stockpeers"
-version = "0.2.0"
-description = "Stock peer analysis dashboard: easily compare stocks against others in their peer group"
+name = "YPFLuz"
+version = "0.1.0"
+description = "Demo de dashboard para monitor de Marca YPF Luz"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
