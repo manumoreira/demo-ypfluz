@@ -48,6 +48,9 @@ if os.path.exists(logo_path):
 else:
     st.write("🏢 YPF Luz Dashboard")  # Fallback if image not found
 
+# Warning message
+st.warning("⚠️ Este Dashboard contiene información aleatoria a modo ilustrativo. \n El dashboard a entregar va a contener la información y los filtros acordados con el cliente.")
+
 "" 
 ""  # Add some space.
 
