@@ -17,7 +17,7 @@ dataframeHeaderBackgroundColor = "#1d293d"
 # Base text
 font = "Space Grotesk"
 baseFontWeight = 300
-baseFontSize = 14
+baseFontSize = 18
 
 # Heading text
 headingFont = "Space Grotesk"

@@ -1,5 +1,5 @@
-Importancia ER,Ola 2,Ola 1
-No sabe,5,7
-No y no lo estamos considerando,45,43
-"No, actualmente estamos evaluando el tema",30,33
-Ya tenemos EERR,20,17
+Importancia ER,Ola1_Total,Ola1_Mineria,Ola1_Agroindustria,Ola1_Quimica,Ola1_Tecnologia,Ola1_Transporte,Ola1_Salud,Ola1_Renovables,Ola2_Total,Ola2_Mineria,Ola2_Agroindustria,Ola2_Quimica,Ola2_Tecnologia,Ola2_Transporte,Ola2_Salud,Ola2_Renovables
+No sabe,13%,7%,9%,6%,3%,32%,9%,22%,32%,21%,32%,9%,22%,22%,32%,7%
+No y no lo estamos considerando,35%,47%,49%,46%,43%,3%,26%,32%,22%,27%,3%,26%,32%,32%,22%,47%
+"No, actualmente estamos evaluando el tema",31%,28%,26%,29%,32%,22%,49%,33%,13%,30%,22%,49%,33%,33%,13%,28%
+Ya tenemos EERR,21%,18%,16%,19%,22%,43%,16%,13%,33%,23%,43%,16%,13%,13%,33%,18%

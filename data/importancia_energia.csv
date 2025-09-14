@@ -1,6 +1,6 @@
-Importancia energia,Ola 2,Ola 1
-"No sabe, no es parte de su rol",4%,4%
-Bajo,14%,18%
-Medio,35%,39%
-Alto,27%,39%
-Crítico,20%,0
+Importancia energia,Ola1_Total,Ola1_Mineria,Ola1_Agroindustria,Ola1_Quimica,Ola1_Tecnologia,Ola1_Transporte,Ola1_Salud,Ola1_Renovables,Ola2_Total,Ola2_Mineria,Ola2_Agroindustria,Ola2_Quimica,Ola2_Tecnologia,Ola2_Transporte,Ola2_Salud,Ola2_Renovables
+"No sabe, no es parte de su rol",4%,6%,8%,3%,4%,2%,6%,6%,2%,4%,0%,6%,6%,4%,2%,0%
+Bajo,18%,12%,10%,20%,16%,18%,16%,22%,14%,12%,10%,8%,16%,14%,12%,10%
+Medio,39%,32%,35%,33%,41%,31%,27%,25%,35%,32%,30%,28%,26%,30%,28%,30%
+Alto,39%,25%,51%,49%,41%,47%,55%,53%,27%,25%,29%,30%,32%,27%,29%,32%
+Crítico,0%,25%,0%,0%,0%,0%,0%,0%,20%,25%,23%,31%,22%,27%,25%,22%

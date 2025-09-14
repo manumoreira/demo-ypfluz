@@ -1,0 +1,6 @@
+Tipo energia,Ola1_Total,Ola1_Mineria,Ola1_Agroindustria,Ola1_Quimica,Ola1_Tecnologia,Ola1_Transporte,Ola1_Salud,Ola1_Renovables,Ola2_Total,Ola2_Mineria,Ola2_Agroindustria,Ola2_Quimica,Ola2_Tecnologia,Ola2_Transporte,Ola2_Salud,Ola2_Renovables
+Solar,66%,63%,60%,57%,54%,58%,55%,52%,69%,66%,63%,60%,57%,61%,58%,55%
+Eólica,55%,52%,49%,46%,43%,47%,44%,41%,52%,49%,46%,43%,40%,44%,41%,38%
+Hidroeléctrica,12%,10%,8%,6%,3%,7%,4%,1%,15%,13%,11%,9%,6%,10%,7%,4%
+Térmica en base a gas,8%,6%,4%,2%,5%,8%,11%,12%,12%,10%,8%,6%,9%,12%,15%,16%
+Biomasa,7%,5%,3%,1%,4%,7%,10%,11%,10%,8%,6%,4%,7%,10%,13%,14%
